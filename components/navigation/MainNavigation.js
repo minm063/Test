@@ -14,7 +14,9 @@ const Drawer = createDrawerNavigator();
 function DrawerNavigation() {
     return (
         <Drawer.Navigator>
-            <Drawer.Screen name="HomeScreen" component={HomeScreen} options={{ drawerLabel: 'Home' }} />
+            <Drawer.Screen name="HomeScreen" component={HomeScreen} 
+                options={{ drawerLabel: 'Home',  headerStyle: {backgroundColor: '#0f5e4a'}, headerTintColor: '#fff'}} 
+            />
             <Drawer.Screen name="Article" component={Article} options={{ drawerLabel: 'Article' }} />
         </Drawer.Navigator>
     );
