@@ -11,61 +11,12 @@ const INITIAL_DATE = new Date().toLocaleDateString('pt-br').split('/').reverse()
 const widthSize = Dimensions.get('window').width;
 const heightSize = Dimensions.get('window').height;
 
-const HomeScreen = () => {
-    // const [selected, setSelected] = React.useState(INITIAL_DATE);
-    // const [currentMonth, setCurrentMonth] = React.useState(INITIAL_DATE);
+const HomeScreen = ({navigation}) => {
 
-    // const getDate = (count) => {
-    //     const date = new Date(INITIAL_DATE);
-    //     const newDate = date.setDate(date.getDate() + count);
-    //     console.log(CalendarUtils.getCalendarDateString(newDate));
-    //     return CalendarUtils.getCalendarDateString(newDate);
-    // };
-
-    // const onDayPress = React.useCallback((day) => {
-    //     setSelected(day.dateString);
-    // }, []);
-
-    // const marked = React.useMemo(() => {
-    //     console.log('marked');
-    //     return {
-    //         // [getDate(-1)]: {
-    //         //     marked: true
-    //         // },
-    //         [selected]: {
-    //             selected: true,
-    //             disableTouchEvent: true,
-    //             selectedColor: '#0099ff',
-    //             selectedTextColor: 'white'
-    //         }
-    //     };
-    // }, [selected]);
-
-    // return (
-    //     <View>
-    //         <CalendarList
-    //             markingType={'custom'}
-    //             markedDates={marked}
-    //             horizontal={true}
-    //             pagingEnabled={true}
-    //             monthFormat={'yyyy MM'}
-    //             onVisibleMonthsChange={(months) => console.log(months)}
-    //             initialDate={INITIAL_DATE}
-    //             onDayPress={onDayPress}
-    //             hideArrows={false}
-    //             hideExtraDays={false}
-    //             hideDayNames={false}
-    //             enableSwipeMonths={true}
-    //             current={INITIAL_DATE}
-    //         />
-    //         <View>
-    //             <Text>plus</Text>
-    //         </View>
-    //     </View>
-    // )
     const [popup, setPopup] = React.useState(false);
     const [serachText, setSearchText] = React.useState('');
     const [selected, setSelected] = React.useState(INITIAL_DATE);
+    const [monthChanged, setMonthChanged] = React.useState('');
     const marked = React.useMemo(() => {
         return {
             // marked -> dot
@@ -93,8 +44,13 @@ const HomeScreen = () => {
     }, []);
 
     React.useEffect(() => {
-        console.log(selected);
-    }, [selected]);
+        console.log('navigation');
+        navigation.setOptions({
+            headerTitle: () => (
+                <Text>{monthChanged}</Text>
+            ),
+        });
+    }, [navigation, monthChanged]);
 
     return (
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
@@ -133,7 +89,10 @@ const HomeScreen = () => {
                 hideArrows={false}
                 hideExtraDays={false}
                 disableAllTouchEventsForDisabledDays={true}
-                onMonthChange={(month) => { console.log(month); }}
+                onMonthChange={(month) => { 
+                    console.log(month.dateString.slice(0,7));
+                    setMonthChanged(month.dateString.slice(0,7));
+                }}
             />
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                 <MaterialCommunityIcons name="bed-empty" size={30} color={'#000'} />

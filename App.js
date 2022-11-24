@@ -8,9 +8,10 @@
 import 'react-native-gesture-handler';
 import React from 'react';
 import DrawerNavigation from './components/navigation/DrawerNavigation';
+import MainNavigation from './components/navigation/MainNavigation';
 
 export default function App(){
   return(
-    <DrawerNavigation />
+    <MainNavigation />
   )
 }
