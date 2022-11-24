@@ -5,6 +5,7 @@ import { Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+
 const RANGE = 24;
 const INITIAL_DATE = new Date().toLocaleDateString('pt-br').split('/').reverse().join('-');
 const widthSize = Dimensions.get('window').width;
@@ -90,6 +91,10 @@ const HomeScreen = () => {
     const onDayPress = React.useCallback((day) => {
         setSelected(day.dateString);
     }, []);
+
+    React.useEffect(() => {
+        console.log(selected);
+    }, [selected]);
 
     return (
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
