@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable, Modal, ScrollView, TextInput, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Modal, ScrollView, TextInput, StyleSheet, Platform } from 'react-native';
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import { Dimensions } from "react-native";
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -8,7 +8,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const RANGE = 24;
-const INITIAL_DATE = new Date().toLocaleDateString('pt-br').split('/').reverse().join('-');
+let INITIAL_DATE = new Date().toLocaleDateString('pt-br').split('/').reverse().join('-');
 const widthSize = Dimensions.get('window').width;
 const heightSize = Dimensions.get('window').height;
 
@@ -45,7 +45,9 @@ const HomeScreen = ({ navigation }) => {
     }, [selected]);
 
     const onDayPress = React.useCallback((day) => {
-        setSelected(day.dateString);
+        (typeof day === 'string' ? setSelected(day) : setSelected(day.dateString));
+        console.log('day pressed: ', day, selected);
+        // setSelected(day.dateString);
     }, []);
 
     React.useEffect(() => {
@@ -53,11 +55,11 @@ const HomeScreen = ({ navigation }) => {
             headerTitle: () => (
                 <Pressable
                     onPress={() => setPopMove(!popMove)}
-                    style={{ flexDirection: 'row', alignItems: 'center',}}>
+                    style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={{ color: '#fff', fontSize: 20, paddingRight: 7 }}>
                         {monthChanged}
                     </Text>
-                    <AntDesign name="caretdown" size={18} color={'#fff'} />
+                    {Platform.OS === 'android' ? (<AntDesign name="caretdown" size={18} color={'#fff'} style={{ paddingTop: 5 }} />) : null}
                 </Pressable>),
         });
     }, [navigation, monthChanged]);
@@ -90,6 +92,11 @@ const HomeScreen = ({ navigation }) => {
                 visible={popMove}
                 animationType={'slide'}
                 transparent={true}
+                onShow={() => {
+                    setMoveYear(selected.split('-')[0]);
+                    setMoveMonth(selected.split('-')[1]);
+                    setMoveDay(selected.split('-')[2]);
+                }}
                 onRequestClose={() => setPopMove(!popMove)}>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <View
@@ -109,7 +116,7 @@ const HomeScreen = ({ navigation }) => {
                                 dropdownStyle={styles.dropdown1DropdownStyle}
                                 rowStyle={styles.dropdown1RowStyle}
                                 rowTextStyle={styles.dropdown1RowTxtStyle}
-                                data={[1999, 2000]}
+                                data={[2022, 2023]}
                                 onSelect={(selectedItem, index) => {
                                     // context, index
                                     console.log(selectedItem, index);
@@ -127,7 +134,7 @@ const HomeScreen = ({ navigation }) => {
                                 dropdownStyle={styles.dropdown1DropdownStyle}
                                 rowStyle={styles.dropdown1RowStyle}
                                 rowTextStyle={styles.dropdown1RowTxtStyle}
-                                data={[1, 2, 3, 11]}
+                                data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]}
                                 onSelect={(selectedItem, index) => {
                                     // context, index
                                     console.log(selectedItem, index);
@@ -159,7 +166,12 @@ const HomeScreen = ({ navigation }) => {
                                 style={styles.popMovePressable}
                                 onPress={() => {
                                     // move to
-                                    console.log(moveYear);
+                                    console.log(moveYear, moveMonth, moveDay);
+                                    const selectedDay = moveYear + '-' + moveMonth + '-' + moveDay;
+                                    console.log(selectedDay);
+                                    INITIAL_DATE = selectedDay;
+                                    onDayPress(selectedDay);
+                                    setPopMove(!popMove);
                                 }}>
                                 <Text style={styles.popMovePressableTxt}>확인</Text>
                             </Pressable>
@@ -187,12 +199,12 @@ const HomeScreen = ({ navigation }) => {
                 hideExtraDays={false}
                 disableAllTouchEventsForDisabledDays={true}
                 onMonthChange={(month) => {
-                    console.log(month.dateString.slice(0, 7));
                     setMonthChanged(month.dateString.slice(0, 7));
+                    setSelected(selected.slice(0,8)+'01');
                 }}
             />
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <MaterialCommunityIcons name="bed-empty" size={30} color={'#000'} />
+                {Platform.OS === 'android' ? (<MaterialCommunityIcons name="bed-empty" size={30} color={'#000'} />) : null}
                 <Text>운동기록이 없습니다</Text>
                 <Text>우측 하단 + 버튼을 눌러 추가해보세요</Text>
             </View>
@@ -227,7 +239,11 @@ const HomeScreen = ({ navigation }) => {
                         onPress={() => {
                             setPopup(!popup);
                         }}>
-                        <AntDesign name="pluscircle" size={widthSize / 8} color={"#00aeff"} />
+                        {Platform.OS === 'android' ? (<AntDesign name="pluscircle" size={widthSize / 8} color={"#00aeff"} />)
+                            : (
+                                <View style={{ width: widthSize / 8, height: widthSize / 8, backgroundColor: '#00aeff', borderRadius: widthSize / 10, alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={{ color: '#fff', alignItems: 'center', fontSize: 30, justifyContent: 'center' }}>+</Text>
+                                </View>)}
                     </Pressable>
                 </View>
             </View>
@@ -248,7 +264,7 @@ const styles = StyleSheet.create({
     dropdown1DropdownStyle: { backgroundColor: '#EFEFEF', borderRadius: 8 },
     dropdown1RowStyle: { backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' },
     dropdown1RowTxtStyle: { color: '#444', textAlign: 'left' },
-    popMovePressable: {borderRadius: 5, borderWidth: 0.6, width: 70, height: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white', marginLeft: 10},
-    popMovePressableTxt: {color: '#000'}
+    popMovePressable: { borderRadius: 5, borderWidth: 0.6, width: 70, height: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white', marginLeft: 10 },
+    popMovePressableTxt: { color: '#000' }
 });
 export default HomeScreen;
