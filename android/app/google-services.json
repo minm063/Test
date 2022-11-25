@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "677223764949",
+    "project_id": "exercisecalendar-3fa72",
+    "storage_bucket": "exercisecalendar-3fa72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677223764949:android:8970d9f34b4da5ae88e35c",
+        "android_client_info": {
+          "package_name": "com.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "677223764949-fh42jppjjgb492bfip41lhcngmfrutro.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.test",
+            "certificate_hash": "2f48f59a5101b5576be801cfd28efe85b3f67812"
+          }
+        },
+        {
+          "client_id": "677223764949-3n4gdnh5hem2f5k06m3cjqvlse9qp5gs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWejHCmFFsgql8yG2zsFNAQaAciLfDAVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "677223764949-3n4gdnh5hem2f5k06m3cjqvlse9qp5gs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
