@@ -11,7 +11,7 @@ const width = Dimensions.get('window').width;
 const googleSigninConfigure = () => {
     GoogleSignin.configure({
         webClientId:
-            '677223764949-3n4gdnh5hem2f5k06m3cjqvlse9qp5gs.apps.googleusercontent.com',
+            '',
     })
 }
 const SignIn = ({ navigation }) => {
