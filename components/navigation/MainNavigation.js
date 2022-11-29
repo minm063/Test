@@ -7,7 +7,7 @@ import auth from '@react-native-firebase/auth';
 
 import HomeScreen from "../screen/HomeScreen";
 import Article from "../screen/Article";
-import Feed from "../screen/Feed";
+import MyPage from "../screen/MyPage";
 import SignIn from "../screen/auth/SignIn";
 import SignUp from "../screen/auth/SignUp";
 
@@ -21,6 +21,7 @@ function DrawerNavigation() {
                 options={{ drawerLabel: 'Home', headerStyle: { backgroundColor: '#0f5e4a' }, headerTintColor: '#fff' }}
             />
             <Drawer.Screen name="Article" component={Article} options={{ drawerLabel: 'Article' }} />
+            <Drawer.Screen name="MyPage" component={MyPage} options={{drawerLabel: 'My Page'}} />
         </Drawer.Navigator>
     );
 }

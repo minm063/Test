@@ -4,7 +4,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import {webClientId} from '../../constants/config.json';
+import { webClientId } from '../../constants/config.json';
 
 import SignUp from "./SignUp";
 
@@ -39,14 +39,19 @@ const SignIn = ({ navigation }) => {
                     <View style={{ width: '70%' }}>
                         <View style={{ width: '100%', marginBottom: 13 }}>
                             <TextInput style={styles.textInput} placeholder={"email"} onChangeText={text => setId(text)} />
-                            <TextInput style={styles.textInput} placeholder={"password"} onChangeText={text => setPw(text)} secureTextEntry={true}/>
+                            <TextInput style={styles.textInput} placeholder={"password"} onChangeText={text => setPw(text)} secureTextEntry={true} />
                         </View>
                         <Pressable
                             style={styles.textInputBtn}
                             onPress={() => {
                                 // sign in
                                 auth().signInWithEmailAndPassword(id, pw)
-                                    .then(() => console.log('sign in'))
+                                    .then(() => {
+                                        // auth
+                                        if (auth().currentUser.emailVerified) {
+                                            auth().signOut().then(() => Alert.alert("info", "email not verified", [{ text: 'OK' }]));
+                                        }
+                                    })
                                     .catch(error => {
                                         console.log(error.code);
                                         if (error.code === 'auth/email-already-in-use') {
