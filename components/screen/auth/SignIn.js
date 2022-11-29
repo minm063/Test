@@ -4,6 +4,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import {webClientId} from '../../constants/config.json';
 
 import SignUp from "./SignUp";
 
@@ -11,7 +12,7 @@ const width = Dimensions.get('window').width;
 const googleSigninConfigure = () => {
     GoogleSignin.configure({
         webClientId:
-            '',
+            webClientId,
     })
 }
 const SignIn = ({ navigation }) => {
