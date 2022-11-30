@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Dimensions, Text, Pressable, StyleSheet, TextInput, Alert } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import database from '@react-native-firebase/database';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import { webClientId } from '../../constants/config.json';
@@ -48,8 +49,13 @@ const SignIn = ({ navigation }) => {
                                 auth().signInWithEmailAndPassword(id, pw)
                                     .then(() => {
                                         // auth
-                                        if (auth().currentUser.emailVerified) {
+                                        if (!auth().currentUser.emailVerified) {
                                             auth().signOut().then(() => Alert.alert("info", "email not verified", [{ text: 'OK' }]));
+                                        }
+                                        else {
+                                            database().ref('/users/' + auth().currentUser.uid)
+                                                .set({ email: id, profile: 'default.png' })
+                                                .then(() => console.log('sign in'));
                                         }
                                     })
                                     .catch(error => {
@@ -69,11 +75,6 @@ const SignIn = ({ navigation }) => {
                         </Pressable>
                         <Pressable
                             style={styles.textInputBtn}
-                            onPress={() => navigation.navigate('SignUp')}>
-                            <Text style={styles.btnText}>회원가입하기</Text>
-                        </Pressable>
-                        <Pressable
-                            style={styles.textInputBtn}
                             onPress={() => setLogin(!login)}>
                             <Text style={styles.btnText}>돌아가기</Text>
                         </Pressable>
@@ -88,9 +89,19 @@ const SignIn = ({ navigation }) => {
                         </Pressable>
                         <Pressable
                             style={styles.btnPressable}
-                            onPress={() => onGoogleButtonPress()}>
+                            onPress={() => {
+                                onGoogleButtonPress().then(() => {
+                                    database().ref('/users/' + auth().currentUser.uid)
+                                        .set({ email: id, profile: 'default.png' })
+                                });
+                            }}>
                             <AntDesign name="google" color='#000' style={styles.btnIcon} />
                             <Text style={styles.btnText}>Google로 로그인</Text>
+                        </Pressable>
+                        <Pressable
+                            style={[styles.btnPressable, { justifyContent: 'center' }]}
+                            onPress={() => navigation.navigate('SignUp')}>
+                            <Text style={styles.btnText}>회원가입하기</Text>
                         </Pressable>
                     </View>
                 )}

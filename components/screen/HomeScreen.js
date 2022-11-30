@@ -6,6 +6,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feed from "./Feed";
 
 const RANGE = 24;
 let INITIAL_DATE = new Date().toLocaleDateString('pt-br').split('/').reverse().join('-');
@@ -200,7 +201,7 @@ const HomeScreen = ({ navigation }) => {
                 disableAllTouchEventsForDisabledDays={true}
                 onMonthChange={(month) => {
                     setMonthChanged(month.dateString.slice(0, 7));
-                    setSelected(selected.slice(0,8)+'01');
+                    setSelected(selected.slice(0, 8) + '01');
                 }}
             />
             <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -237,13 +238,14 @@ const HomeScreen = ({ navigation }) => {
                 <View style={{ margin: 20, position: 'absolute', bottom: 0, right: 0 }}>
                     <Pressable
                         onPress={() => {
-                            setPopup(!popup);
+                            navigation.navigate('Feed', {'selected': selected});
                         }}>
                         {Platform.OS === 'android' ? (<AntDesign name="pluscircle" size={widthSize / 8} color={"#00aeff"} />)
                             : (
                                 <View style={{ width: widthSize / 8, height: widthSize / 8, backgroundColor: '#00aeff', borderRadius: widthSize / 10, alignItems: 'center', justifyContent: 'center' }}>
                                     <Text style={{ color: '#fff', alignItems: 'center', fontSize: 30, justifyContent: 'center' }}>+</Text>
-                                </View>)}
+                                </View>
+                            )}
                     </Pressable>
                 </View>
             </View>

@@ -7,7 +7,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { Calendar, CalendarList, Agenda, CalendarUtils } from "react-native-calendars";
 
 import HomeScreen from "../screen/HomeScreen";
-import Article from "../screen/Article";
+import Record from "../screen/Record";
 import Feed from "../screen/Feed";
 import HomeFeed from "../screen/HomeFeed";
 
@@ -30,7 +30,7 @@ const DrawerNavigation = () => {
             <Drawer.Navigator>
                 <Drawer.Screen name="MainNavigation" component={MainNavigation} options={{drawerLabel: 'HomePage'}} />
                 <Drawer.Screen name="Feed" component={Feed} options={{ drawerLabel: 'Feed' }} />
-                <Drawer.Screen name="Article" component={Article} options={{ drawerLabel: 'Article' }} />
+                <Drawer.Screen name="Article" component={Record} options={{ drawerLabel: 'Article' }} />
             </Drawer.Navigator>
         </NavigationContainer>
     )

@@ -10,51 +10,60 @@ const width = Dimensions.get('window').width;
 const SignUp = ({ navigation }) => {
     const [email, setEmail] = React.useState('');
     const [pw, setPw] = React.useState('');
+    const [name, setName] = React.useState('');
     return (
         <View style={styles.container}>
-            <View style={{ flex: 1, justifyContent: 'center' }}>
-                <Entypo name="creative-cloud" size={width / 100 * 50} color={'#fff'} />
+            <View style={{ flex: 2, justifyContent: 'center' }}>
+                <Entypo name="creative-cloud" size={width / 100 * 30} color={'#fff'} />
             </View>
-            <View style={{ width: '80%', flex: 1 }}>
+            <View style={{ width: '80%', flex: 3 }}>
                 <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}>이메일</Text>
                 <TextInput style={styles.textInput} onChangeText={text => setEmail(text)} placeholder={'이메일'} />
                 <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}>비밀번호</Text>
                 <TextInput style={styles.textInput} onChangeText={text => setPw(text)} secureTextEntry={true} placeholder={'비밀번호'} />
-                <View style={{marginTop: 8}}>
-                    <Pressable
-                        style={styles.textInputBtn}
-                        onPress={() => {
-                            if (!(email&&pw)) {
-                                Alert.alert("info", "이메일 또는 비밀번호를 확인해주세요.", [{text: 'OK'}]);
-                            }
-                            else {
-                                auth().createUserWithEmailAndPassword(email, pw)
-                                    .then(() => {
-                                        auth().signOut().then(() => {
-                                            Alert.alert("info", "Check your Email", [{ text: "OK" }]);
+                <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}>사용자 닉네임</Text>
+                <TextInput style={styles.textInput} onChangeText={text => setName(text)} secureTextEntry={true} placeholder={'별명'} />
+            </View>
+            <View style={{ width: '80%', flex: 1.5 }}>
+                <Pressable
+                    style={styles.textInputBtn}
+                    onPress={() => {
+                        if (!(email && pw)) {
+                            Alert.alert("info", "이메일 또는 비밀번호를 확인해주세요.", [{ text: 'OK' }]);
+                        }
+                        else {
+                            auth().createUserWithEmailAndPassword(email, pw)
+                                .then(() => {
+                                    console.log(email);
+                                    auth().currentUser.sendEmailVerification().then(() => {
+                                        auth().currentUser.updateProfile({ displayName: name }).then(() => {
+                                            console.log(name);
+                                            auth().signOut().then(() => {
+                                                Alert.alert("info", "Check your Email", [{ text: "OK" }]);
+                                            });
                                         });
-                                    })
-                                    .catch(error => {
-                                        if (error.code === 'auth/email-already-in-use') {
-                                            console.log('That email address is already in use!');
-                                        }
-                                        if (error.code === 'auth/invalid-email') {
-                                            console.log('That email address is invalid!');
-                                        }
-                                        console.error(error);
                                     });
-                            }
-                        }}
-                    >
-                        <Text style={styles.btnText}>회원가입하기</Text>
-                    </Pressable>
-                    <Pressable
-                        style={styles.textInputBtn}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Text style={styles.btnText}>뒤로 가기</Text>
-                    </Pressable>
-                </View>
+                                })
+                                .catch(error => {
+                                    if (error.code === 'auth/email-already-in-use') {
+                                        console.log('That email address is already in use!');
+                                    }
+                                    if (error.code === 'auth/invalid-email') {
+                                        console.log('That email address is invalid!');
+                                    }
+                                    console.error(error);
+                                });
+                        }
+                    }}
+                >
+                    <Text style={styles.btnText}>회원가입하기</Text>
+                </Pressable>
+                <Pressable
+                    style={styles.textInputBtn}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Text style={styles.btnText}>뒤로 가기</Text>
+                </Pressable>
             </View>
         </View>
     )
@@ -64,8 +73,9 @@ const styles = StyleSheet.create({
     container:
     {
         backgroundColor: '#00aeff',
-        flex: 1,
         alignItems: 'center',
+        justifyContent: 'space-between',
+        flex: 1
     },
     textInput: {
         borderWidth: 1,
@@ -84,6 +94,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 10,
         borderWidth: 1,
+        marginVertical: 7
     },
     btnPressable: {
         width: '100%',
@@ -101,15 +112,5 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginHorizontal: 10
     },
-    textInputBtn: {
-        width: '100%',
-        height: 40,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        borderWidth: 1,
-        marginVertical: 4
-    }
 })
 export default SignUp;
