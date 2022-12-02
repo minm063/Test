@@ -14,6 +14,7 @@ import MyPage from "../screen/MyPage";
 import SignIn from "../screen/auth/SignIn";
 import SignUp from "../screen/auth/SignUp";
 import Feed from "../screen/Feed";
+import FeedCustom from "../screen/FeedCustom";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -34,10 +35,10 @@ function CustomDrawerContent(props) {
         <View style={{ flex: 1, }}>
             <DrawerContentScrollView {...props}>
                 {/* profile image, email, name */}
-                <View style={{ padding: 30, justifyContent: 'center'}}>
-                    <Image source={{ uri : profileImg }} style={{width: 50, height: 50, borderRadius: 100}}/>
-                    <Text style={{paddingTop: 10,}}>{user.email}</Text>
-                    <Text style={{paddingVertical: 7,}}>{user.displayName}</Text>
+                <View style={{ padding: 30, justifyContent: 'center' }}>
+                    <Image source={{ uri: profileImg }} style={{ width: 50, height: 50, borderRadius: 100 }} />
+                    <Text style={{ paddingTop: 10, }}>{user.email}</Text>
+                    <Text style={{ paddingVertical: 7, }}>{user.displayName}</Text>
                 </View>
                 <DrawerItemList {...props} />
                 <View>
@@ -93,7 +94,10 @@ const MainNavigation = () => {
                 <Stack.Navigator>
                     <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} options={{ headerShown: false }} />
                     <Stack.Screen name="Feed" component={Feed} />
-                    
+                    <Stack.Screen name="FeedCustom" component={FeedCustom} options={{
+                        title: '커스텀 운동 만들기', headerStyle: { backgroundColor: '#0f5e4a' },
+                        headerTintColor: '#fff',
+                    }} />
                 </Stack.Navigator>
             </NavigationContainer>
         )

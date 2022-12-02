@@ -3,11 +3,30 @@ import { StyleSheet, View, Switch, Text, Pressable, TextInput, useWindowDimensio
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
-
 const category = () => (
-    <View style={{ flex: 1, backgroundColor: '#ff4081' }} />
+    <View styles={{ flex: 1, }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Pressable style={styles.category}>
+                <Text>전체</Text>
+            </Pressable>
+            <Pressable style={styles.category}><Text>커스텀</Text></Pressable>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Pressable style={styles.category}><Text>유산소</Text></Pressable>
+            <Pressable style={styles.category}><Text>상체</Text></Pressable>
+            <Pressable style={styles.category}><Text>하체</Text></Pressable>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Pressable style={styles.category}><Text>전신</Text></Pressable>
+            <Pressable style={styles.category}><Text>스트레칭</Text></Pressable>
+        </View>
+    </View>
 );
-
+const Temp0 = () => {
+    return (
+        <View><Text>Temp0</Text></View>
+    )
+};
 const Temp1 = () => (
     <View>
         <Text>전체</Text>
@@ -42,6 +61,7 @@ const Temp6 = () => (
 const renderScene = SceneMap({
     category: category,
     '1': Temp1,
+    '0': Temp0,
     '2': Temp2,
     '3': Temp3,
     '4': Temp4,
@@ -79,7 +99,7 @@ const Feed = ({ route, navigation }) => {
                     <Pressable onPress={() => onSearch(!pressSearch)}>
                         <AntDesign name='search1' color={'#fff'} size={20} style={styles.headerIcon} />
                     </Pressable>
-                    <Pressable onPress={() => console.log('custom')}>
+                    <Pressable onPress={() => navigation.navigate('FeedCustom')}>
                         {
                             pressSearch ?
                                 (
@@ -95,13 +115,16 @@ const Feed = ({ route, navigation }) => {
             )
         })
     }, [route, pressSearch]);
+    useEffect(() => {
+        //db
+    }, []);
 
     const layout = useWindowDimensions();
-
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: 'category', title: '분류' },
         { key: '1', title: '전체' },
+        { key: '0', title: '커스텀' },
         { key: '2', title: '유산소' },
         { key: '3', title: '상체' },
         { key: '4', title: '하체' },
@@ -126,7 +149,7 @@ const Feed = ({ route, navigation }) => {
                     )}
                 />
             </View>
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: '#aeff00' }}>
                 <View style={{ flex: 2 }}></View>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', flexDirection: 'row', backgroundColor: '#EFEFEF' }}>
                     <Pressable
@@ -155,6 +178,14 @@ const styles = StyleSheet.create({
         height: 41,
         alignItems: 'center',
         justifyContent: 'center',
+        margin: 10
+    },
+    category: {
+        borderWidth: 1,
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 80, height: 50,
         margin: 10
     }
 })

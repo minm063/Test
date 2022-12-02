@@ -101,7 +101,7 @@ const HomeScreen = ({ navigation }) => {
                 onRequestClose={() => setPopMove(!popMove)}>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <View
-                        style={{ width: widthSize - 50, height: widthSize - 180, padding: 20, backgroundColor: '#cdcecf', borderRadius: 10, justifyContent: 'space-around', }}>
+                        style={styles.popView}>
                         <View>
                             <Text style={{ fontSize: 20, color: '#000' }}>날짜 이동하기</Text>
                             <View style={{ borderWidth: 0.6, marginVertical: 8 }} />
@@ -235,14 +235,14 @@ const HomeScreen = ({ navigation }) => {
                 </ScrollView>
             </View> */}
             <View>
-                <View style={{ margin: 20, position: 'absolute', bottom: 0, right: 0 }}>
+                <View style={styles.plusBtn}>
                     <Pressable
                         onPress={() => {
-                            navigation.navigate('Feed', {'selected': selected});
+                            navigation.navigate('Feed', { 'selected': selected });
                         }}>
-                        {Platform.OS === 'android' ? (<AntDesign name="pluscircle" size={widthSize / 8} color={"#00aeff"} />)
+                        {Platform.OS === 'android' ? (<AntDesign name="pluscircle" size={widthSize / 8} color={"#00aeff"} style={styles.shadowProp} />)
                             : (
-                                <View style={{ width: widthSize / 8, height: widthSize / 8, backgroundColor: '#00aeff', borderRadius: widthSize / 10, alignItems: 'center', justifyContent: 'center' }}>
+                                <View style={styles.plusText}>
                                     <Text style={{ color: '#fff', alignItems: 'center', fontSize: 30, justifyContent: 'center' }}>+</Text>
                                 </View>
                             )}
@@ -266,7 +266,45 @@ const styles = StyleSheet.create({
     dropdown1DropdownStyle: { backgroundColor: '#EFEFEF', borderRadius: 8 },
     dropdown1RowStyle: { backgroundColor: '#EFEFEF', borderBottomColor: '#C5C5C5' },
     dropdown1RowTxtStyle: { color: '#444', textAlign: 'left' },
-    popMovePressable: { borderRadius: 5, borderWidth: 0.6, width: 70, height: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white', marginLeft: 10 },
-    popMovePressableTxt: { color: '#000' }
+    popMovePressable: {
+        borderRadius: 5, borderWidth: 0.6, width: 70, height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        marginLeft: 10
+    },
+    popMovePressableTxt: { color: '#000' },
+    plusBtn: {
+        margin: 20, position: 'absolute', bottom: 0, right: 0,
+    },
+    plusText: {
+        width: widthSize / 8, height: widthSize / 8,
+        backgroundColor: '#00aeff',
+        borderRadius: widthSize / 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    popView: {
+        width: widthSize - 50, height: widthSize - 180,
+        padding: 20,
+        backgroundColor: '#cdcecf',
+        borderRadius: 10,
+        justifyContent: 'space-around',
+    },
+    shadowProp: {
+        ...Platform.select({
+            ios: {
+                shadowColor: "rgb(50,50,50)",
+                shadowOpacity: 0.5,
+                shadowRadius: 5,
+                shadowOffset: {
+                    height: -1, width: 0
+                },
+            },
+            android: {
+                elevation: 3,
+            }
+        })
+    }
 });
 export default HomeScreen;
