@@ -1656,6 +1656,11 @@
   "resolved" "https://registry.npmjs.org/@react-native-firebase/database/-/database-16.4.6.tgz"
   "version" "16.4.6"
 
+"@react-native-firebase/firestore@^16.4.6":
+  "integrity" "sha512-8O0k0Usx908I5Ra+H2ALCxYDvmcvIL+dUYGRn+oUrnDkIL2crKU7QqV157phpC74tFMMWXIaUuFrqtGQgXBCww=="
+  "resolved" "https://registry.npmjs.org/@react-native-firebase/firestore/-/firestore-16.4.6.tgz"
+  "version" "16.4.6"
+
 "@react-native-firebase/storage@^16.4.6":
   "integrity" "sha512-m5WYVAooTbe3p4E5ZQvsxMOsBf/ViJfD1uksKfM6cTtXuFo13zSfQkS08t69//5H+MtC7qN1hMpWaoN0UuOwbg=="
   "resolved" "https://registry.npmjs.org/@react-native-firebase/storage/-/storage-16.4.6.tgz"
