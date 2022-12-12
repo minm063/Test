@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, View, Switch, Text, Pressable, TextInput, useWindowDimensions, ScrollView, Dimensions, TouchableHighlight, Image, Modal } from 'react-native';
+import { StyleSheet, View, Switch, Text, Pressable, TextInput, useWindowDimensions, ScrollView, Dimensions, TouchableHighlight, Image, Modal, VirtualizedList } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import firestore from '@react-native-firebase/firestore';
@@ -16,6 +16,7 @@ const wait = (timeout) => {
 
 const Feed = ({ route, navigation }) => {
 
+    const scrollRef = React.useRef();
     const [pressSearch, onSearch] = useState(false);
     const [search, setSearch] = useState('');
     const layout = useWindowDimensions();
@@ -30,7 +31,7 @@ const Feed = ({ route, navigation }) => {
         wait(1000).then(() => setRefreshing(false));
     }, []);
 
-    const category = () => (
+    const CategoryRoute = () => (
         <View style={{ flex: 1, }}>
             <View style={{ height: '100%', justifyContent: 'center', alignItems: 'center', }}>
                 <View style={{ flexDirection: 'row', }}>
@@ -50,7 +51,7 @@ const Feed = ({ route, navigation }) => {
         </View>
     );
     // 커스텀
-    const Temp0 = () => {
+    const CustomRoute = () => {
 
         const [modal, setModal] = useState(false);
 
@@ -97,7 +98,7 @@ const Feed = ({ route, navigation }) => {
                                     setModal(!modal);
                                 }}
                                 onPress={() => {
-                                    setExercise(prev => [...prev, {[item.thumbnails] : item}]); //수정 -> item.thumbnails가 ".., .."
+                                    setExercise(prev => [...prev, { [item.thumbnails]: item.timestamp }]);
                                 }}>
                                 <View style={{ flexDirection: 'row', marginVertical: 10, }}>
                                     <Image source={{ uri: item.thumbnails[0] }} style={{ width: width / 3, height: 80 }} />
@@ -118,28 +119,59 @@ const Feed = ({ route, navigation }) => {
         )
     };
     // 전체
-    const Temp1 = () => (
+    const TotalRoute = () => (
         <View>
             <Text>전체</Text>
         </View>
     );
+
+    // virtualized
+    const Item = ({ title }) => (
+        <Pressable style={({ pressed }) => [{
+            backgroundColor: pressed ? 'rgb(210, 230, 225)' : 'white'
+        }, styles.list]}
+        onPress={() => setExercise(prev => [...prev, title])}>
+            <Text style={styles.listText}>{title}</Text>
+        </Pressable>
+    )
+    const getItem = (data, index) => {
+        return {
+            id: index,
+            title: data[index]
+        }
+    }
+    const getItemCount = (data) => (Object.values(data).length);
+    onScrollFail = info => {
+        const wait = new Promise(resolve => setTimeout(resolve, 500));
+        wait.then(() => {
+            
+        })
+    }
+
     // 유산소
-    const Temp2 = () => (
-        <View>
-            <ScrollView>
-                {data.aerobic && data.aerobic.map((item, index) => (
+    const AerobicRoute = () => {
+        return (
+            <View>
+                {data.aerobic && (
+                    <VirtualizedList
+                        data={data.aerobic}
+                        getItemCount={getItemCount}
+                        renderItem={({ item }) => <Item title={item.title} />}
+                        getItem={getItem}
+                        keyExtractor={item => item.id}
+                    />
+                )}
+                {/* {data.aerobic && data.aerobic.map((item, index) => (
                     <TouchableHighlight key={index}
                         underlayColor='#DDDDDD'
                         onPress={() => setExercise(prev => [...prev, item])} >
-                        <View style={styles.list} >
-                            <Text style={styles.listText}>{item}</Text>
-                        </View>
+
                     </TouchableHighlight>
-                ))}
-            </ScrollView>
-        </View>
-    );
-    const Temp3 = () => (
+                ))} */}
+            </View>
+        );
+    }
+    const UpRoute = () => (
         <View>
             <ScrollView>
                 {data.up && data.up.map((item, index) => (
@@ -153,17 +185,17 @@ const Feed = ({ route, navigation }) => {
             </ScrollView>
         </View>
     );
-    const Temp4 = () => (
+    const DownRoute = () => (
         <View>
             <Text>하체</Text>
         </View>
     );
-    const Temp5 = () => (
+    const AllRoute = () => (
         <View>
             <Text>전신</Text>
         </View>
     );
-    const Temp6 = () => (
+    const StretchRoute = () => (
         <View>
             <Text>스트레칭</Text>
         </View>
@@ -202,13 +234,16 @@ const Feed = ({ route, navigation }) => {
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                     <Pressable onPress={() => {
                         onSearch(true);
-                        const key = Object.keys(data);
-                        let found = '';
-                        key.map(item => {
-                            found = data[item].find(element => element === search);
-                        });
-                        console.log(found);
-                        // Object.keys(data).find(key => data[key] === search);
+                        if (search.length) {
+                            const key = Object.keys(data);
+                            key.map((item, i) => {
+                                // data[item]
+                                const idx = data[item].indexOf(search);
+                                if (idx) {
+                                    setIndex(i + 2);
+                                }
+                            });
+                        }
                     }}>
                         <AntDesign name='search1' color={'#fff'} size={20} style={styles.headerIcon} />
                     </Pressable>
@@ -242,16 +277,16 @@ const Feed = ({ route, navigation }) => {
         getData();
     }, []);
 
-
+    // route, jumpTo, position
     const renderScene = SceneMap({
-        category: category,
-        total: Temp1,
-        custom: Temp0,
-        aerobic: Temp2,
-        up: Temp3,
-        down: Temp4,
-        all: Temp5,
-        stretch: Temp6
+        category: CategoryRoute,
+        total: TotalRoute,
+        custom: CustomRoute,
+        aerobic: AerobicRoute,
+        up: UpRoute,
+        down: DownRoute,
+        all: AllRoute,
+        stretch: StretchRoute
     });
     const [routes] = useState([
         { key: 'category', title: '분류' },
@@ -288,15 +323,13 @@ const Feed = ({ route, navigation }) => {
                     }>
                         {exercise.map((item, index) => (
                             <Pressable key={index} style={styles.box}
-                            onPress={() => {
-                                // del
-                                exercise.splice(index, 1);
-                                onRefresh();
-                                console.log(exercise);
-                            }}>
-                                    {console.log(item)}
+                                onPress={() => {
+                                    // del
+                                    exercise.splice(index, 1);
+                                    onRefresh();
+                                }}>
                                 {Object.keys(item)[0].includes("http") ? (
-                                    <Image source={{ uri: Object.keys(item)[0] }} resizeMode={'contain'} style={{ width: '100%', height: '100%' }} />
+                                    <Image source={{ uri: Object.keys(item)[0].split(',')[0] }} resizeMode={'contain'} style={{ width: '100%', height: '100%' }} />
                                 ) : (
                                     <Text style={{ color: '#000' }}>{item}</Text>
                                 )}
@@ -313,11 +346,13 @@ const Feed = ({ route, navigation }) => {
                     <Pressable style={[styles.footerBtn, { backgroundColor: '#00aeff' }]}
                         onPress={() => {
                             const timestamp = Date.now();
-                            database().ref('/exercise/' + user.uid + '/' + route.params.selected)
-                                .update({
-                                    [timestamp]: exercise,
-                                });
-                            navigation.goBack();
+                            // database().ref('/exercise/' + user.uid + '/' + route.params.selected)
+                            //     .update({
+                            //         [timestamp]: exercise,
+                            //     })
+                            //     .then(() => navigation.goBack())
+                            //     .catch((error) => console.log(error));
+                            console.log(exercise);
                         }}>
                         <Text style={{ fontSize: 15, color: '#fff' }}>완료</Text>
                     </Pressable>

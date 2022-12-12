@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Button, Image, Text, Pressable, Alert, } from "react-native";
+import { View, Button, Image, Text, Pressable, Alert, ActivityIndicator, } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
@@ -15,6 +15,7 @@ import SignIn from "../screen/auth/SignIn";
 import SignUp from "../screen/auth/SignUp";
 import Feed from "../screen/Feed";
 import FeedCustom from "../screen/FeedCustom";
+import Logo from "../Logo";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
