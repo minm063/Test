@@ -6,51 +6,62 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feed from "./Feed";
+import database from '@react-native-firebase/database';
+import auth from '@react-native-firebase/auth';
+import { FlatList } from "react-native-gesture-handler";
 
 const RANGE = 24;
 let INITIAL_DATE = new Date().toLocaleDateString('pt-br').split('/').reverse().join('-');
 const widthSize = Dimensions.get('window').width;
-const heightSize = Dimensions.get('window').height;
-
 const HomeScreen = ({ navigation }) => {
 
-    const [popup, setPopup] = React.useState(false);
+    const [data, setData] = React.useState([]);
     const [popMove, setPopMove] = React.useState(false);
-    const [serachText, setSearchText] = React.useState('');
+    const [markedDays, setMarkedDays] = React.useState({});
     const [moveYear, setMoveYear] = React.useState('');
     const [moveMonth, setMoveMonth] = React.useState('');
     const [moveDay, setMoveDay] = React.useState('');
     const [selected, setSelected] = React.useState(INITIAL_DATE); // 'yyyy-MM-DD'
     const [monthChanged, setMonthChanged] = React.useState(INITIAL_DATE.slice(0, 7));
-    const marked = React.useMemo(() => {
-        return {
-            // marked -> dot
-            // [nextWeekDate]: {
-            //     selected: selected === nextWeekDate,
-            //     selectedTextColor: '#5E60CE',
-            //     marked: true
-            // },
-            // [nextMonthDate]: {
-            //     selected: selected === nextMonthDate,
-            //     selectedTextColor: '#5E60CE',
-            //     marked: true
-            // },
-            [selected]: {
-                selected: true,
-                disableTouchEvent: true,
-                selectedColor: '#00aeff',
-                selectedTextColor: 'white'
-            }
-        };
-    }, [selected]);
+
+    // const mark = React.useMemo(() => {
+
+    //     // return {
+    //     //     [markedDays]: {marked: true},
+    //     //     [selected]: {
+    //     //         selected: true,
+    //     //         disableTouchEvent: true,
+    //     //         selectedColor: '#00aeff',
+    //     //         selectedTextColor: 'white'
+    //     //     }
+    //     // };
+    //     console.log(markedDays);
+    //     return {
+    //         [selected]: {
+    //             selected: true, selectedColor: '#00aeff',
+    //         },
+    //         // } markedDays[selected] = {
+    //         //     selected: true, selectedColor: '#00aeff',
+    //         // };
+    //     }
+    // }, [selected, markedDays]);
 
     const onDayPress = React.useCallback((day) => {
         (typeof day === 'string' ? setSelected(day) : setSelected(day.dateString));
-        console.log('day pressed: ', day, selected);
-        // setSelected(day.dateString);
+        // day in markedDays.keys
     }, []);
 
+    React.useEffect(() => {
+        database().ref('/exercise/' + auth().currentUser.uid).on('value', snapshot => {
+            if (snapshot.exists()) {
+                setData(snapshot.val());
+                // const temp = Object.keys(snapshot.val()).reduce((c, v) => Object.assign(c, {[v]: {marked: true}}), {});
+                Object.keys(snapshot.val()).forEach((item) => {
+                    setMarkedDays(prev => ({ ...prev, [item]: { marked: true, } }));
+                });
+            }
+        })
+    }, []);
     React.useEffect(() => {
         navigation.setOptions({
             headerTitle: () => (
@@ -67,28 +78,6 @@ const HomeScreen = ({ navigation }) => {
 
     return (
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
-            <Modal
-                visible={popup}
-                animationType="slide"
-                transparent={false}
-                onRequestClose={() => setPopup(!popup)}
-                onShow={() => console.log('modal shown')}
-            >
-                {/* 운동기록 등록 */}
-                <View style={{ margin: 18 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                        <View style={{ borderWidth: 1, width: '90%', borderRadius: 10 }}>
-                            <TextInput style={{ padding: 10 }} onChangeText={text => setSearchText(text)} />
-                        </View>
-                        <Pressable
-                            style={{ alignItems: 'center', justifyContent: 'center', padding: 10 }}
-                            onPress={() => console.log(serachText)}
-                        >
-                            <AntDesign name="search1" color={'#000'} size={heightSize / 36} />
-                        </Pressable>
-                    </View>
-                </View>
-            </Modal>
             <Modal
                 visible={popMove}
                 animationType={'slide'}
@@ -193,7 +182,14 @@ const HomeScreen = ({ navigation }) => {
                 pastScrollRange={RANGE}
                 futureScrollRange={RANGE}
                 onDayPress={onDayPress}
-                markedDates={marked}
+                markedDates={{
+                    ...markedDays, [selected]: {
+                        selected: true,
+                        disableTouchEvent: true,
+                        selectedColor: '#00aeff',
+                        selectedTextColor: 'white'
+                    }
+                }}
                 horizontal={true}
                 pagingEnabled={true}
                 monthFormat={'yyyy . MM'}
@@ -204,36 +200,34 @@ const HomeScreen = ({ navigation }) => {
                     setSelected(selected.slice(0, 8) + '01');
                 }}
             />
-            <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                {Platform.OS === 'android' ? (<MaterialCommunityIcons name="bed-empty" size={30} color={'#000'} />) : null}
-                <Text>운동기록이 없습니다</Text>
-                <Text>우측 하단 + 버튼을 눌러 추가해보세요</Text>
-            </View>
-            {/* <View>
-                <ScrollView>
-                    <Pressable>
-                        <Text style={{fontSize: 70}}>#1 neck raise</Text>
-                    </Pressable>
-                    <Pressable>
-                        <Text style={{fontSize: 70}}>#1 neck raise</Text>
-                    </Pressable>
-                    <Pressable>
-                        <Text style={{fontSize: 70}}>#1 neck raise</Text>
-                    </Pressable>
-                    <Pressable>
-                        <Text style={{fontSize: 70}}>#1 neck raise</Text>
-                    </Pressable>
-                    <Pressable>
-                        <Text style={{fontSize: 70}}>#1 neck raise</Text>
-                    </Pressable>
-                    <Pressable>
-                        <Text style={{fontSize: 70}}>#1 neck raise</Text>
-                    </Pressable>
-                    <Pressable>
-                        <Text style={{fontSize: 70}}>#1 neck raise</Text>
-                    </Pressable>
-                </ScrollView>
-            </View> */}
+            {Object.keys(markedDays).includes(selected) ? (
+                <View style={{ flex:1 }}>
+                    <FlatList
+                        data={Object.values(data[selected])}
+                        renderItem={item => (
+                            <View style={{ flex: 1, borderWidth: 0.6, borderRadius: 20, borderColor: '#000', padding: 10, margin: 10 }}>
+                                    <Text>{Object.values(item.item)[0].split(',')[3]}</Text>
+                                    <Text>{Object.values(item.item)[0].split(',')[0]}</Text>
+                                    <Text>{Object.values(item.item)[1]}</Text>
+                                    <Text>{Object.values(item.item)[2]}</Text>
+                                    <Text>{Object.values(item.item)[2]}</Text>
+                            </View>
+                        )} />
+                    {/* {Object.values(data[selected]).map(item => {
+                        <View style={{borderWidth: 0.6, borderRadius: 20, borderColor: '#000'}}>
+                        </View>
+                        console.log(typeof item);
+                    })} */}
+                </View>
+            ) : (
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <MaterialCommunityIcons name="bed-empty" size={30} color={'#000'} />
+                    <Text>운동기록이 없습니다</Text>
+                    <Text>우측 하단 + 버튼을 눌러 추가해보세요</Text>
+                </View>
+            )}
+
+
             <View>
                 <View style={styles.plusBtn}>
                     <Pressable

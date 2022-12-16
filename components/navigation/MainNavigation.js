@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Button, Image, Text, Pressable, Alert, ActivityIndicator, } from "react-native";
+import { View, Image, Text, Pressable, Alert, ActivityIndicator, } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
@@ -15,13 +15,13 @@ import SignIn from "../screen/auth/SignIn";
 import SignUp from "../screen/auth/SignUp";
 import Feed from "../screen/Feed";
 import FeedCustom from "../screen/FeedCustom";
-import Logo from "../Logo";
+import FriendList from "../screen/FriendList";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
-const user = auth().currentUser;
 
 function CustomDrawerContent(props) {
+    const user = auth().currentUser;
     const [profileImg, setProfileImg] = useState(null);
     const downloadFile = async (fileName) => {
         const url = await storage().ref('profile/' + fileName).getDownloadURL();
@@ -63,8 +63,9 @@ function DrawerNavigation() {
             <Drawer.Screen name="HomeScreen" component={HomeScreen}
                 options={{ drawerLabel: '홈', headerStyle: { backgroundColor: '#0f5e4a' }, headerTintColor: '#fff', drawerLabelStyle: { color: '#000' } }}
             />
-            <Drawer.Screen name="Record" component={Record} options={{ drawerLabel: '기록', drawerLabelStyle: { color: '#000' } }} />
-            <Drawer.Screen name="MyPage" component={MyPage} options={{ drawerLabel: '마이 페이지', drawerLabelStyle: { color: '#000' } }} />
+            <Drawer.Screen name="Record" component={Record} options={{ drawerLabel: '알림', title: '알림', drawerLabelStyle: { color: '#000' }, headerStyle: { backgroundColor: '#0f5e4a' }, headerTintColor: '#fff' }} />
+            <Drawer.Screen name="FriendList" component={FriendList} options={{ drawerLabel: '친구 목록', title: '친구 목록', drawerLabelStyle: { color: '#000' }, headerStyle: { backgroundColor: '#0f5e4a' }, headerTintColor: '#fff' }} />
+            <Drawer.Screen name="MyPage" component={MyPage} options={{ drawerLabel: '마이 페이지', title: '마이페이지', drawerLabelStyle: { color: '#000' }, headerStyle: { backgroundColor: '#0f5e4a' }, headerTintColor: '#fff' }} />
 
         </Drawer.Navigator>
     );
@@ -89,7 +90,7 @@ const MainNavigation = () => {
     if (initializing) return null;
 
     // auth
-    if (user) {
+    if (user && auth().currentUser.emailVerified) {
         return (
             <NavigationContainer>
                 <Stack.Navigator>
@@ -99,6 +100,7 @@ const MainNavigation = () => {
                         title: '커스텀 운동 만들기', headerStyle: { backgroundColor: '#0f5e4a' },
                         headerTintColor: '#fff',
                     }} />
+
                 </Stack.Navigator>
             </NavigationContainer>
         )

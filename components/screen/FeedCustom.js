@@ -12,8 +12,8 @@ const wait = (timeout) => {
         setTimeout(resolve, timeout);
     });
 }
+const width = Dimensions.get('window').width;
 const FeedCustom = ({ navigation }) => {
-
     const [pressSearch, onSearch] = useState(false);
     const [search, setSearch] = useState('');
     const [data, setData] = useState();
@@ -23,7 +23,6 @@ const FeedCustom = ({ navigation }) => {
     const [thumbnailUri, setThumnailUri] = useState([]);
     const [videoId, setVideoId] = useState([]);
     const [count, setCount] = useState(1);
-    const [pressed, setPressed] = useState(false);
     // modal
     const [modal, setModal] = useState(false);
     const [title, setTitle] = useState('');
@@ -216,13 +215,15 @@ const FeedCustom = ({ navigation }) => {
                     >
                         {thumbnailUri.map((item, index) => (
                             <Pressable key={index}
+                                style={styles.box}
                                 onPress={() => {
                                     //삭제
                                     thumbnailUri.splice(index, 1);
                                     videoId.splice(index, 1)
                                     onRefresh();
                                 }}>
-                                <Image source={{ uri: item }} style={{ width: 120, height: 100, margin: 7 }} resizeMode={"contain"} />
+                                <Image source={{ uri: item }} style={{ width: '100%', height: '100%', margin: 7 }} resizeMode={"contain"} />
+                                <AntDesign name='closecircleo' size={20} color='#000' style={{ position: 'absolute', right: 0, top: 0, margin: 5 }} />
                             </Pressable>
                         ))}
                     </ScrollView>
@@ -285,6 +286,13 @@ const styles = StyleSheet.create({
     modalInput: {
         borderWidth: 0.6,
         borderRadius: 7,
-    }
+    },
+    box: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: width / 100 * 30,
+        backgroundColor: '#fff',
+        margin: 10
+    },
 });
 export default FeedCustom;

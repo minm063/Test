@@ -20,7 +20,8 @@ const Feed = ({ route, navigation }) => {
     const [pressSearch, onSearch] = useState(false);
     const [search, setSearch] = useState('');
     const layout = useWindowDimensions();
-    const [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(0); //tab
+    const [searchIndex, setSearchIndex] = useState(0); // search -> scroll index
     const [data, setData] = useState({});
     const [exercise, setExercise] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
@@ -98,7 +99,8 @@ const Feed = ({ route, navigation }) => {
                                     setModal(!modal);
                                 }}
                                 onPress={() => {
-                                    setExercise(prev => [...prev, { [item.thumbnails]: item.timestamp }]);
+                                    console.log(item.thumbnails[0]);
+                                    setExercise(prev => [...prev, item.thumbnails[0] + ',' + item.timestamp]);
                                 }}>
                                 <View style={{ flexDirection: 'row', marginVertical: 10, }}>
                                     <Image source={{ uri: item.thumbnails[0] }} style={{ width: width / 3, height: 80 }} />
@@ -130,7 +132,7 @@ const Feed = ({ route, navigation }) => {
         <Pressable style={({ pressed }) => [{
             backgroundColor: pressed ? 'rgb(210, 230, 225)' : 'white'
         }, styles.list]}
-        onPress={() => setExercise(prev => [...prev, title])}>
+            onPress={() => setExercise(prev => [...prev, title])}>
             <Text style={styles.listText}>{title}</Text>
         </Pressable>
     )
@@ -141,13 +143,6 @@ const Feed = ({ route, navigation }) => {
         }
     }
     const getItemCount = (data) => (Object.values(data).length);
-    onScrollFail = info => {
-        const wait = new Promise(resolve => setTimeout(resolve, 500));
-        wait.then(() => {
-            
-        })
-    }
-
     // 유산소
     const AerobicRoute = () => {
         return (
@@ -159,6 +154,7 @@ const Feed = ({ route, navigation }) => {
                         renderItem={({ item }) => <Item title={item.title} />}
                         getItem={getItem}
                         keyExtractor={item => item.id}
+                        initialScrollIndex={searchIndex ? searchIndex : 0}
                     />
                 )}
                 {/* {data.aerobic && data.aerobic.map((item, index) => (
@@ -173,31 +169,58 @@ const Feed = ({ route, navigation }) => {
     }
     const UpRoute = () => (
         <View>
-            <ScrollView>
-                {data.up && data.up.map((item, index) => (
-                    <Pressable key={index}
-                        onPress={() => setExercise(prev => [...prev, item])} >
-                        <View style={styles.list} >
-                            <Text style={styles.listText}>{item}</Text>
-                        </View>
-                    </Pressable>
-                ))}
-            </ScrollView>
+            {data.up && (
+                <VirtualizedList
+                    data={data.up}
+                    getItemCount={getItemCount}
+                    renderItem={({ item }) => <Item title={item.title} />}
+                    getItem={getItem}
+                    keyExtractor={item => item.id}
+                    initialScrollIndex={searchIndex ? searchIndex : 0}
+                />
+            )}
         </View>
     );
     const DownRoute = () => (
         <View>
-            <Text>하체</Text>
+            {data.down && (
+                <VirtualizedList
+                    data={data.down}
+                    getItemCount={getItemCount}
+                    renderItem={({ item }) => <Item title={item.title} />}
+                    getItem={getItem}
+                    keyExtractor={item => item.id}
+                    initialScrollIndex={searchIndex ? searchIndex : 0}
+                />
+            )}
         </View>
     );
     const AllRoute = () => (
         <View>
-            <Text>전신</Text>
+            {data.all && (
+                <VirtualizedList
+                    data={data.all}
+                    getItemCount={getItemCount}
+                    renderItem={({ item }) => <Item title={item.title} />}
+                    getItem={getItem}
+                    keyExtractor={item => item.id}
+                    initialScrollIndex={searchIndex ? searchIndex : 0}
+                />
+            )}
         </View>
     );
     const StretchRoute = () => (
         <View>
-            <Text>스트레칭</Text>
+            {data.stretch && (
+                <VirtualizedList
+                    data={data.stretch}
+                    getItemCount={getItemCount}
+                    renderItem={({ item }) => <Item title={item.title} />}
+                    getItem={getItem}
+                    keyExtractor={item => item.id}
+                    initialScrollIndex={searchIndex ? searchIndex : 0}
+                />
+            )}
         </View>
     );
 
@@ -239,8 +262,9 @@ const Feed = ({ route, navigation }) => {
                             key.map((item, i) => {
                                 // data[item]
                                 const idx = data[item].indexOf(search);
-                                if (idx) {
-                                    setIndex(i + 2);
+                                if (idx > 0) {
+                                    setIndex(i + 3);
+                                    setSearchIndex(idx);
                                 }
                             });
                         }
@@ -328,11 +352,12 @@ const Feed = ({ route, navigation }) => {
                                     exercise.splice(index, 1);
                                     onRefresh();
                                 }}>
-                                {Object.keys(item)[0].includes("http") ? (
-                                    <Image source={{ uri: Object.keys(item)[0].split(',')[0] }} resizeMode={'contain'} style={{ width: '100%', height: '100%' }} />
+                                {item.includes("https") ? (
+                                    <Image source={{ uri: item.split(',')[0] }} resizeMode={'contain'} style={{ width: '100%', height: '100%' }} />
                                 ) : (
                                     <Text style={{ color: '#000' }}>{item}</Text>
                                 )}
+                                <AntDesign name='closecircleo' size={20} color='#000' style={{ position: 'absolute', right: 0, top: 0, margin: 5 }} />
                             </Pressable>
                         ))}
                     </ScrollView>
@@ -346,12 +371,12 @@ const Feed = ({ route, navigation }) => {
                     <Pressable style={[styles.footerBtn, { backgroundColor: '#00aeff' }]}
                         onPress={() => {
                             const timestamp = Date.now();
-                            // database().ref('/exercise/' + user.uid + '/' + route.params.selected)
-                            //     .update({
-                            //         [timestamp]: exercise,
-                            //     })
-                            //     .then(() => navigation.goBack())
-                            //     .catch((error) => console.log(error));
+                            database().ref('/exercise/' + user.uid + '/' + route.params.selected)
+                                .update({
+                                    [timestamp]: exercise,
+                                })
+                                .then(() => navigation.goBack())
+                                .catch((error) => console.log(error));
                             console.log(exercise);
                         }}>
                         <Text style={{ fontSize: 15, color: '#fff' }}>완료</Text>

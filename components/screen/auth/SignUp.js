@@ -1,48 +1,50 @@
 import React from "react";
-import { View, StyleSheet, Dimensions, Pressable, Text, Alert } from 'react-native';
+import { View, StyleSheet, Dimensions, Pressable, Text, Alert, ActivityIndicator } from 'react-native';
 import { TextInput } from "react-native-gesture-handler";
 import Entypo from 'react-native-vector-icons/Entypo';
 import auth from '@react-native-firebase/auth';
-import { CommonActions } from "@react-navigation/native";
-import SignIn from "./SignIn";
+import database from '@react-native-firebase/database';
 
 const width = Dimensions.get('window').width;
 const SignUp = ({ navigation }) => {
     const [email, setEmail] = React.useState('');
     const [pw, setPw] = React.useState('');
     const [name, setName] = React.useState('');
+    const [animating, setAnimating] = React.useState(false);
+
     return (
         <View style={styles.container}>
             <View style={{ flex: 2, justifyContent: 'center' }}>
                 <Entypo name="creative-cloud" size={width / 100 * 30} color={'#fff'} />
             </View>
             <View style={{ width: '80%', flex: 3 }}>
-                <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}>이메일</Text>
+                <Text style={styles.text}>이메일</Text>
                 <TextInput style={styles.textInput} onChangeText={text => setEmail(text)} placeholder={'이메일'} />
-                <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}>비밀번호</Text>
+                <Text style={styles.text}>비밀번호</Text>
                 <TextInput style={styles.textInput} onChangeText={text => setPw(text)} secureTextEntry={true} placeholder={'비밀번호'} />
-                <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}>사용자 닉네임</Text>
-                <TextInput style={styles.textInput} onChangeText={text => setName(text)} secureTextEntry={true} placeholder={'별명'} />
+                <Text style={styles.text}>사용자 닉네임</Text>
+                <TextInput style={styles.textInput} onChangeText={text => setName(text)} placeholder={'별명'} />
             </View>
             <View style={{ width: '80%', flex: 1.5 }}>
                 <Pressable
                     style={styles.textInputBtn}
                     onPress={() => {
+                        setAnimating(!animating);
                         if (!(email && pw)) {
+                            setAnimating(!animating);
                             Alert.alert("info", "이메일 또는 비밀번호를 확인해주세요.", [{ text: 'OK' }]);
                         }
                         else {
                             auth().createUserWithEmailAndPassword(email, pw)
-                                .then(() => {
-                                    console.log(email);
-                                    auth().currentUser.sendEmailVerification().then(() => {
-                                        auth().currentUser.updateProfile({ displayName: name }).then(() => {
-                                            console.log(name);
-                                            auth().signOut().then(() => {
-                                                Alert.alert("info", "Check your Email", [{ text: "OK" }]);
-                                            });
+                                .then((userCredential) => {
+                                    userCredential.user.sendEmailVerification().catch((error) => console.log("email send error: ", error));
+                                    userCredential.user.updateProfile({ displayName: name }).catch((error) => console.log("auth update error", error));
+                                    database().ref('/users/' + auth().currentUser.uid)
+                                        .set({ email: email, profile: 'default.png', name: name })
+                                        .then(() => {
+                                            setAnimating(!animating);
+                                            Alert.alert("info", "Check your Email", [{ text: "OK", onPress: () => navigation.goBack() }]);
                                         });
-                                    });
                                 })
                                 .catch(error => {
                                     if (error.code === 'auth/email-already-in-use') {
@@ -51,7 +53,7 @@ const SignUp = ({ navigation }) => {
                                     if (error.code === 'auth/invalid-email') {
                                         console.log('That email address is invalid!');
                                     }
-                                    console.error(error);
+                                    console.error("user create error: ", error);
                                 });
                         }
                     }}
@@ -60,10 +62,12 @@ const SignUp = ({ navigation }) => {
                 </Pressable>
                 <Pressable
                     style={styles.textInputBtn}
-                    onPress={() => navigation.goBack()}
-                >
+                    onPress={() => navigation.goBack()}>
                     <Text style={styles.btnText}>뒤로 가기</Text>
                 </Pressable>
+            </View>
+            <View style={styles.activityIndicator}>
+                <ActivityIndicator animating={animating} size="large" />
             </View>
         </View>
     )
@@ -112,5 +116,19 @@ const styles = StyleSheet.create({
         fontSize: 15,
         marginHorizontal: 10
     },
+    text: {
+        fontWeight: 'bold',
+        color: '#fff',
+        ontSize: 18
+    },
+    activityIndicator: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 })
 export default SignUp;
