@@ -52,12 +52,12 @@ const SignIn = ({ navigation }) => {
                                         if (!auth().currentUser.emailVerified) {
                                             Alert.alert("info", "email not verified", [{ text: 'OK', onPress: ()=> setAnimating(!animating) }]);
                                         }
-                                        else {
-                                            database().ref('users/'+auth().currentUser.uid).update({
-                                                emailVerified: true,
-                                                latestAccess: Date.now(),
-                                            });
-                                        }
+                                        // else {
+                                        //     database().ref('users/'+auth().currentUser.uid).update({
+                                        //         emailVerified: true,
+                                        //         latestAccess: Date.now(),
+                                        //     });
+                                        // }
                                     })
                                     .catch(error => {
                                         if (error.code === 'auth/email-already-in-use') {

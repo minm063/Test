@@ -60,7 +60,10 @@ const HomeScreen = ({ navigation }) => {
                     setMarkedDays(prev => ({ ...prev, [item]: { marked: true, } }));
                 });
             }
-        })
+        });
+        database().ref('/users/'+auth().currentUser.uid).update({
+            latestAccess: Date.now(),
+        });
     }, []);
     React.useEffect(() => {
         navigation.setOptions({
