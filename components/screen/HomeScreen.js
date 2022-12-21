@@ -208,9 +208,17 @@ const HomeScreen = ({ navigation }) => {
                     <FlatList
                         data={Object.values(data[selected])}
                         renderItem={item => (
-                            <View style={{ flex: 1, borderWidth: 0.6, borderRadius: 20, borderColor: '#000', padding: 10, margin: 10 }}>
-                                <Text>{JSON.stringify(Object.values(item.item))}</Text>
-                            </View>
+                            <ScrollView horizontal>
+
+                                <View style={{ flex: 1, borderWidth: 0.6, borderRadius: 20, borderColor: '#000', padding: 10, margin: 10 }}>
+                                    {Object.values(item.item).map(item2 => {
+                                        return (
+                                            <Text>{item2}</Text>
+                                        )
+                                    })}
+                                    {/* <Text selectable>{JSON.stringify(Object.values(item.item))}</Text> */}
+                                </View>
+                            </ScrollView>
                         )} />
                 </View>
             ) : (
