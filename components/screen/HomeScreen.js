@@ -61,7 +61,7 @@ const HomeScreen = ({ navigation }) => {
                 });
             }
         });
-        database().ref('/users/'+auth().currentUser.uid).update({
+        database().ref('/users/' + auth().currentUser.uid).update({
             latestAccess: Date.now(),
         });
     }, []);
@@ -145,10 +145,9 @@ const HomeScreen = ({ navigation }) => {
                                 dropdownStyle={styles.dropdown1DropdownStyle}
                                 rowStyle={styles.dropdown1RowStyle}
                                 rowTextStyle={styles.dropdown1RowTxtStyle}
-                                data={[20, 21, 22, 23, 24, 25, 26]}
+                                data={[...Array(31)].map((_, i) => 1 + i)}
                                 onSelect={(selectedItem, index) => {
                                     // context, index
-                                    console.log(selectedItem, index);
                                     setMoveDay(selectedItem);
                                 }}
                                 defaultButtonText={selected.split('-')[2]}
@@ -204,23 +203,15 @@ const HomeScreen = ({ navigation }) => {
                 }}
             />
             {Object.keys(markedDays).includes(selected) ? (
-                <View style={{ flex:1 }}>
+                <View style={{ flex: 1 }}>
+                    {/* <Text>{Object.values(item.item)[0].split(',')[3]}</Text> */}
                     <FlatList
                         data={Object.values(data[selected])}
                         renderItem={item => (
                             <View style={{ flex: 1, borderWidth: 0.6, borderRadius: 20, borderColor: '#000', padding: 10, margin: 10 }}>
-                                    <Text>{Object.values(item.item)[0].split(',')[3]}</Text>
-                                    <Text>{Object.values(item.item)[0].split(',')[0]}</Text>
-                                    <Text>{Object.values(item.item)[1]}</Text>
-                                    <Text>{Object.values(item.item)[2]}</Text>
-                                    <Text>{Object.values(item.item)[2]}</Text>
+                                <Text>{JSON.stringify(Object.values(item.item))}</Text>
                             </View>
                         )} />
-                    {/* {Object.values(data[selected]).map(item => {
-                        <View style={{borderWidth: 0.6, borderRadius: 20, borderColor: '#000'}}>
-                        </View>
-                        console.log(typeof item);
-                    })} */}
                 </View>
             ) : (
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, View, StyleSheet, Pressable, Text, FlatList, Image, RefreshControl, ActivityIndicator } from 'react-native';
+import { TextInput, View, StyleSheet, Pressable, Text, FlatList, Image, RefreshControl, ActivityIndicator, Keyboard } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FlashMessage from 'react-native-flash-message';
@@ -27,6 +27,7 @@ const FriendList = () => {
     const clearInput = () => {
         inputRef.current.clear();
         setSearch('');
+        Keyboard.dismiss();
     }
 
     React.useEffect(() => {
